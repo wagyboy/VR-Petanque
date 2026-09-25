@@ -36,33 +36,49 @@ open question below.
 ## Ground-contact definition
 
 The **predicted first ground contact** is the earliest point along the predicted
-flight where the boule's collision geometry intersects the configured playable
-ground surface. It is the landing point exposed by the preview.
+flight where the boule's finite collision volume intersects the configured
+playable ground surface. The prediction must account for the boule's size. It
+is the landing point exposed by the preview.
 
 The contact point must be evaluated against the actual ground surface, including
 its height and local slope, rather than assuming a constant world-space height.
-The displayed point should therefore lie on the surface used for gameplay
-collision. “First” means the first qualifying intersection along the flight
-path; later bounces, rolls, and contacts are outside this preview's landing-point
-definition.
+The **boule-center trajectory** is the path of the center of that volume; the
+**ground-contact point** is the point where the volume first touches the ground
+surface. For a finite-size boule, the center is generally above the ground at
+first contact, so the center-path endpoint and the ground-contact marker are
+not required to occupy the same position. The marker must lie on the surface
+used for gameplay collision. “First” means the first qualifying intersection
+along the flight path; later bounces, rolls, and contacts are outside this
+preview's landing-point definition.
 
 ## Surface scenarios
 
 ### Flat ground
 
 For a level playable surface, the predicted contact point is where the
-trajectory first reaches the surface's collision height. The visual marker and
-trajectory endpoint should agree in horizontal position and surface height,
-within the tolerance selected by implementation and review.
+finite-size boule first touches the surface's collision height. The marker
+should lie on that surface at the contact location, while the center-path
+endpoint should remain offset above the surface by the boule's size. The marker
+and center-path endpoint therefore represent related but distinct points.
 
 ### Sloped ground
 
 For a continuous slope, the predicted contact point is where the flight path
-first intersects the sloped collision surface. Its height must be sampled from
-that surface at the contact location; it must not be forced to the height of a
-global horizontal plane. The marker should remain attached to the slope and
-the preview should not move the point to a later, lower, or higher position
-merely because that position is easier to represent.
+of the finite-size boule first intersects the sloped collision surface. Its
+height must be sampled from that surface at the contact location; it must not
+be forced to the height of a global horizontal plane. The marker should remain
+attached to the slope, while the boule center remains offset from the surface
+according to the collision volume. The marker and center-path endpoint must not
+be collapsed into one point.
+
+For an **uphill** throw, the first contact occurs where the ascending surface
+reaches the boule's volume; the contact marker follows the higher local surface
+height at that location, and the center is above it. For a **downhill** throw,
+the first contact occurs where the descending surface first reaches the volume;
+the marker follows the lower local surface height at that location, and the
+center is still offset above it. In both cases, first contact is determined
+along the flight path, not by selecting a later point solely because it is
+higher or lower.
 
 If terrain contains an obstruction, discontinuity, or multiple candidate
 surfaces, the first intersection with an eligible playable-ground collider
@@ -90,8 +106,8 @@ but that would require separate requirements and acceptance criteria.
   collision, or any difference is explicitly documented and reviewed.
 - The player's current aiming pose and release parameters are the inputs to the
   prediction.
-- The boule is treated as a collision volume, not only as a point, when
-  determining first contact.
+- The prediction accounts for the boule's finite size when determining first
+  contact.
 - The preview is allowed to update continuously while the player aims.
 - “Ground” excludes non-playable scenery unless an implementation explicitly
   marks that scenery as eligible.
@@ -106,8 +122,8 @@ but that would require separate requirements and acceptance criteria.
   collision surface?
 - Which collider layers/tags identify eligible playable ground?
 - How should the preview represent a trajectory with no eligible intersection?
-- Should the preview include the boule radius and other collision-shape
-  details, and what physics timestep/settings should it use?
+- Which exact collision shape and radius/size value should represent the boule,
+  and which physics timestep/settings should the prediction use?
 - If the surface changes abruptly or multiple eligible colliders overlap, what
   ordering and visual treatment should be used?
 - Is post-contact bounce/roll prediction intentionally deferred for the whole
@@ -133,8 +149,9 @@ requirements for review, not evidence that the game behavior has been tested.
 
 ## Review and verification boundary
 
-This deliverable has received only author self-review during drafting. Per
-`docs/workflow-policy.md`, self-review is not independent approval. No Unity
-scene, executable game behavior, or automated game test was run for this
-documentation task; game test cases remain **Not Run** until an implementation
-exists.
+The initial draft was generated by GitHub Copilot and received an automated
+whitespace/error check using `git diff --check`. Human review identified the
+findings addressed in this revision; final acceptance remains pending. This is
+not independent approval, and no Unity scene, executable game behavior, or
+automated game test was run for this documentation task. Game test cases remain
+**Not Run** until an implementation exists.
