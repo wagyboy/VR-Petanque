@@ -91,13 +91,11 @@ These are separate concepts:
 
 | Concept | Meaning | Included in this requirement |
 | --- | --- | --- |
-| First ground contact | Earliest collision of the predicted flight with playable ground | Yes; this is the preview landing point |
-| Subsequent motion | Bounce, roll, slide, or additional collisions after contact | No; not represented by the landing-point acceptance criteria |
-| Final resting position | Position after motion has settled under the physics rules | No; it must not be presented as the first-contact marker |
+| First ground contact | Earliest contact of the predicted finite-size boule with playable ground | Yes; this is the preview landing point |
+| Subsequent motion | Bounce, roll, slide, or additional collisions after contact | No |
+| Final resting position | Position after motion has settled under the physics rules | No |
 
-The preview must not label or describe the first-contact marker as the
-boule's final destination. A future feature may predict post-contact motion,
-but that would require separate requirements and acceptance criteria.
+The preview must not label or describe the first-contact marker as the boule's final destination. A future feature may predict post-contact motion, but that would require separate requirements and acceptance criteria.
 
 ## Assumptions
 
@@ -118,8 +116,9 @@ but that would require separate requirements and acceptance criteria.
 
 - What visual marker and wording should communicate first contact without
   implying final resting position?
-- What tolerance is acceptable between the rendered endpoint, marker, and
-  collision surface?
+- What positional tolerance should apply to the ground-contact marker on the
+  collision surface, and to the center-path endpoint relative to the expected
+  boule-center position at first contact?
 - Which collider layers/tags identify eligible playable ground?
 - How should the preview represent a trajectory with no eligible intersection?
 - Which exact collision shape and radius/size value should represent the boule,
